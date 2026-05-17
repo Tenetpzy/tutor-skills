@@ -1,0 +1,45 @@
+{
+  "skill_name": "tutor-generate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Please generate learning content from the outline file at /home/pzy/tutor-skills/tutor-generate-workspace/iteration-1/eval-1-basic-generation/outline_dir/learning-outline-git-basics.md. Save all output in the same directory as the outline.",
+      "expected_output": "A directory with chapter subdirectories, each containing index.md with concrete-first teaching content, plus a README.md table of contents.",
+      "files": ["evals/files/outline-git-basics.md"],
+      "expectations": [
+        "Each chapter has its own subdirectory (not flat .md files) with index.md inside",
+        "README.md exists in the outline directory with a table of contents linking to all chapters",
+        "Content follows concrete-first teaching: concrete examples appear before abstract definitions in each chapter",
+        "Omitted topics are respected: content does NOT cover git internals (objects/hashes), branching, remote repositories, .gitignore, git diff, or reverting commits",
+        "Each chapter's core takeaway is prominently highlighted (e.g., blockquote)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "请根据 /home/pzy/tutor-skills/tutor-generate-workspace/iteration-1/eval-2-omitted-topics/outline_dir/learning-outline-sql-joins.md 这个大纲生成具体的学习内容，相关文件都保存在大纲所在的目录下。",
+      "expected_output": "A directory with chapter subdirectories, each containing index.md. The '暂不涉及' topics must NOT appear in any chapter content.",
+      "files": ["evals/files/outline-sql-joins.md"],
+      "expectations": [
+        "Each chapter has its own subdirectory (not flat .md files) with index.md inside",
+        "README.md exists in the outline directory with a table of contents linking to all chapters",
+        "Content follows concrete-first teaching: 具体例子 appears before 抽象定义 in each chapter",
+        "暂不涉及 topics are respected: content does NOT cover 数据库范式(1NF/2NF/3NF), 外键约束创建语法, JOIN与子查询性能对比, FULL OUTER JOIN, 自连接(Self Join), NULL处理陷阱, or 多条件连接",
+        "Each chapter's 核心要点 is prominently highlighted"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Generate detailed teaching content from the outline at /home/pzy/tutor-skills/tutor-generate-workspace/iteration-1/eval-3-learner-profile/outline_dir/learning-outline-rest-api.md. Please write complete chapter content following the outline's teaching approach. Save output in the outline's directory.",
+      "expected_output": "Content tailored to a frontend developer with no backend experience. Examples should use frontend/familiar contexts. All chapters follow concrete-before-abstract teaching.",
+      "files": ["evals/files/outline-rest-api.md"],
+      "expectations": [
+        "Each chapter has its own subdirectory (not flat .md files) with index.md inside",
+        "README.md exists in the outline directory with a table of contents linking to all chapters",
+        "Content is tailored to a frontend developer audience: uses fetch() or JavaScript examples, does NOT assume server framework or backend experience",
+        "Content follows concrete-first teaching: concrete examples appear before abstract definitions in each chapter",
+        "Omitted for now topics are respected: content does NOT cover HTTPS/TLS details, HTTP/2 multiplexing, HATEOAS, GraphQL, CORS, content negotiation, API versioning strategies, or XML formats",
+        "Each chapter's core takeaway is prominently highlighted (e.g., blockquote)"
+      ]
+    }
+  ]
+}
