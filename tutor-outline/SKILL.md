@@ -27,11 +27,14 @@ Phases 0–3 are for creating a new outline. Phase 4 is optional and can be ente
 
 ### Phase 0 — Confirm Output Directory
 
-Before any diagnosis begins, ask the user where to save the outline file. If the user has already provided a directory, confirm it. If they haven't, you MUST ask — do not proceed to diagnosis until you have a confirmed save path.
+Before any diagnosis begins, determine where to save the outline file:
 
-Example: "在开始之前，请告诉我你希望把大纲文件保存到哪个目录？"
+1. **If the task instructions already specify a save directory**, use that directory directly — no need to ask the user. Proceed to Phase 1.
+2. **If no save directory is provided in the instructions**, ask the user where they want to save the outline. Do NOT proceed to diagnosis until you have a confirmed save path.
 
-Once you have the directory, confirm it back to the user and proceed to Phase 1.
+   Example: "在开始之前，请告诉我你希望把大纲文件保存到哪个目录？"
+
+Once you have the directory (either from instructions or user confirmation), confirm it back to the user briefly and proceed to Phase 1.
 
 ### Phase 1 — Diagnose the Target's Prerequisites
 
@@ -56,7 +59,7 @@ Output: A clear picture of where the user's knowledge ends and where the gaps be
 
 Build a structured outline that describes **how to teach** the target, not the content itself. The outline maps the journey from the user's current knowledge boundary to the learning target.
 
-After constructing the outline, you MUST persist it to disk. Write the outline as a Markdown file to the directory confirmed in Phase 0, using the filename `learning-outline-[topic].md` (e.g., `learning-outline-transformer.md`). Confirm to the user that the file has been saved and tell them the full path.
+After constructing the outline, you MUST persist it to disk. Write the outline as a Markdown file to the directory determined in Phase 0 (either from the task instructions or user confirmation), using the filename `learning-outline-[topic].md` (e.g., `learning-outline-transformer.md`). Confirm to the user that the file has been saved and tell them the full path.
 
 ### Phase 4 — Revise the Outline Based on User Feedback
 
