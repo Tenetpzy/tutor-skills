@@ -1,0 +1,83 @@
+{
+  "skill_name": "tutor-outline",
+  "evals": [
+    {
+      "id": 1,
+      "name": "vague-feedback-clarification",
+      "prompt": "你在之前帮我生成了一个学习 Transformer 的大纲。我看了之后觉得第三章太难了，能不能调一下？保存到 /tmp/test-eval-outline/",
+      "expected_output": "Skill should ask clarifying questions about what 'too hard' means (math too advanced? too many concepts? lacking prerequisites?) before making changes. Should NOT immediately modify the outline.",
+      "assertions": [
+        {
+          "name": "asks_clarification",
+          "type": "llm_boolean",
+          "prompt": "Does the response ask the user to clarify what they mean by 'too hard' before making changes to the outline?",
+          "expected": true
+        },
+        {
+          "name": "does_not_modify_blindly",
+          "type": "llm_boolean",
+          "prompt": "Does the response refrain from rewriting or modifying the outline before getting clarification from the user?",
+          "expected": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "misjudged-foundation-propagation",
+      "prompt": "之前你帮我做的大纲里假设我懂线性代数，但实际上我只学过高中数学，矩阵那一块我不太明白。你帮我修改一下大纲吧。大纲文件在 /tmp/test-eval-outline/learning-outline-transformer.md，修改后保存回同一位置。",
+      "expected_output": "Skill should: (1) recognize this reveals a misjudgment of foundation, (2) update the Learner Profile, (3) propagate changes to all affected chapters (not just the one mentioning linear algebra), and (4) save the updated outline.",
+      "assertions": [
+        {
+          "name": "updates_learner_profile",
+          "type": "llm_boolean",
+          "prompt": "Does the response indicate that the Learner Profile (current level and/or depth-breadth strategy) needs to be or has been updated based on the new information about the user's foundation?",
+          "expected": true
+        },
+        {
+          "name": "propagates_across_chapters",
+          "type": "llm_boolean",
+          "prompt": "Does the response modify more than just the chapter that directly mentions linear algebra? For example, does it adjust prerequisites, add new chapters, or change the difficulty progression across multiple chapters?",
+          "expected": true
+        },
+        {
+          "name": "saves_updated_file",
+          "type": "llm_boolean",
+          "prompt": "Does the response save the updated outline to the specified path?",
+          "expected": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "create-outline-regression",
+      "prompt": "我想学习 React Hooks，我会 JavaScript 和基础 React（class component），但没接触过 Hooks。请帮我设计一个教学大纲。保存到 /tmp/test-eval-outline/",
+      "expected_output": "A structured teaching outline following the skill's format with Learner Profile, chapters with prerequisites, teaching approach (concrete→pattern→abstract), core takeaways, and transitions.",
+      "assertions": [
+        {
+          "name": "has_learner_profile",
+          "type": "llm_boolean",
+          "prompt": "Does the output include a Learner Profile section with current level and depth-breadth strategy?",
+          "expected": true
+        },
+        {
+          "name": "uses_chapter_format",
+          "type": "llm_boolean",
+          "prompt": "Does the outline use 'Chapter N' format for each section?",
+          "expected": true
+        },
+        {
+          "name": "declares_prerequisites",
+          "type": "llm_boolean",
+          "prompt": "Does each chapter declare its prerequisites explicitly?",
+          "expected": true
+        },
+        {
+          "name": "saves_file",
+          "type": "llm_boolean",
+          "prompt": "Does the response save the outline to the specified directory?",
+          "expected": true
+        }
+      ]
+    }
+  ]
+}
