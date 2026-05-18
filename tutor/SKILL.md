@@ -28,7 +28,41 @@ Determine which workflow the user needs:
 - **Workflow A — Full Learning Pipeline**: The user wants to learn something new from
   scratch. Go through all phases: outline creation → content generation.
 - **Workflow B — Outline Revision**: The user has an existing outline and wants to
-  modify it. Go through revision only, then optionally regenerate content.
+  modify it. Go through revision, then optionally regenerate content.
+
+### Shared Phase: Review & Approval Loop
+
+This is a reusable, self-contained iteration that ensures the user explicitly approves
+a saved outline before any expensive downstream work (content generation) begins.
+
+**Input**: A saved outline file path.
+**Output**: User approval to proceed.
+
+**Loop steps**:
+
+1. **Display the complete outline.** Read the outline file and present its full contents
+to the user. Do NOT summarize or truncate — show every chapter, prerequisite, and teaching
+approach so the user can make an informed decision.
+
+2. **Ask for feedback.** Ask whether the user is satisfied or wants changes. Example:
+   > "以上是完整的大纲内容。如果你有任何修改意见，请告诉我。确认满意后，我将开始生成学习内容。"
+
+3. **Handle the response:**
+   - **If the user approves** → Exit the loop. The outline is ready for the next phase.
+   - **If the user requests changes**:
+     a. Load `tutor-outline`.
+     b. Follow its Phase 4 (Revise the Outline Based on User Feedback). Provide the
+        outline file path and the user's feedback. Let it handle clarification, root-cause
+        diagnosis, propagation, and saving.
+     c. Wait until the revised outline has been saved to disk.
+     d. **Return to step 1** — read the updated outline, display it in full again, and
+        ask for confirmation. Repeat until the user approves.
+
+**Rules:**
+- Do not proceed to content generation until the user explicitly approves.
+- After every revision, always re-display the full outline. Do not ask the user to
+  "just trust that it was fixed."
+- Do not skip this loop even if the user is in a hurry.
 
 ### Workflow A: Full Learning Pipeline
 
@@ -40,16 +74,20 @@ Determine which workflow the user needs:
 3. Do NOT proceed to A2 until the outline file has been successfully saved to disk and
    you have its full path.
 
-#### A2. Content Generation
+#### A2. Review & Approval
+
+Run the **Review & Approval Loop** using the outline from A1.
+
+#### A3. Content Generation
 
 1. Use the `skill` tool to load `tutor-generate`.
 2. Follow the tutor-generate skill's workflow exactly, using the outline file path from
-   A1. The tutor-generate skill will handle loading/validating the outline, task
-   decomposition, parallel generation, consistency review, and final assembly.
+   the approved outline (from A2). The tutor-generate skill will handle loading/validating
+the outline, task decomposition, parallel generation, consistency review, and final assembly.
 
-#### A3. Completion Report
+#### A4. Completion Report
 
-After both phases are complete, summarize for the user:
+After content generation is complete, summarize for the user:
 - The outline file location
 - The generated chapter directories and their file counts
 - Any unresolved issues flagged during the consistency review
@@ -72,17 +110,19 @@ If the user doesn't know the path, help them find it — suggest searching for
    foundation changes, preserve what works, and save the updated outline.
 3. Do NOT proceed until the revised outline has been saved to disk.
 
-#### B3. Offer Regeneration
+#### B3. Review & Approval
 
-After the outline is revised, ask the user whether they want to regenerate the learning
+Run the **Review & Approval Loop** using the revised outline from B2.
+
+#### B4. Offer Regeneration
+
+After the outline is approved, ask the user whether they want to regenerate the learning
 content to reflect the changes. Phrase it naturally:
 
 "大纲已更新。需要我根据修改重新生成受影响的章节内容吗？"
 
 - **If yes**: Use the `skill` tool to load `tutor-generate`, pointing it at the revised
-  outline file. The tutor-generate skill will handle the full generation pipeline —
-  it may regenerate all chapters or let its consistency review flag which ones actually
-  need updating.
+  outline file. The tutor-generate skill will handle the full generation pipeline.
 - **If no**: The revision is complete. Remind the user that they can request regeneration
   at any time.
 
@@ -92,7 +132,8 @@ content to reflect the changes. Phrase it naturally:
   `tutor-generate` as needed. All the actual work — diagnosis, outline construction,
   content generation, revision, review — happens inside those sub-skills.
 - Always load each sub-skill with the `skill` tool before beginning its phase.
-- For Workflow A, the outline file path produced in A1 must be explicitly passed into A2.
+- For Workflow A, the outline file path produced in A1 (or the latest revision from A2)
+  must be explicitly passed into A3.
 - For Workflow B, the outline file path must be provided when loading `tutor-outline`
   so it knows which file to revise.
 - If either sub-skill encounters an error that prevents completion, report it to the
