@@ -1,13 +1,14 @@
 ---
 name: tutor-generate
 description: >
-  Generate detailed, ready-to-study learning content from a tutor-outline teaching plan.
-  Use this skill whenever a user wants to generate, expand, or write content from a
-  learning outline — "根据大纲生成内容", "展开教学大纲", "write the content for each
-  chapter", "generate learning materials", "按照大纲写详细内容", or any request to
-  turn a structured teaching plan into complete educational content. This skill works
-  with outlines created by the tutor-outline skill. It decomposes the outline chapters
-  into parallel subagent tasks to avoid context exhaustion from per-chapter research.
+  Internal sub-skill of the tutor pipeline. Generates detailed, ready-to-study
+  learning content from a teaching outline created by tutor-outline. Decomposes
+  outline chapters into parallel subagent tasks for content generation, followed
+  by consistency review and assembly.
+  This skill is normally loaded by the tutor skill via the skill tool and should
+  not be triggered by general user conversation — user-facing learning requests are
+  handled by the tutor skill. Only invoke directly if the user explicitly asks for
+  this skill by name (e.g., "使用 tutor-generate").
 ---
 
 # Tutor Generate Skill

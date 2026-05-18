@@ -1,18 +1,13 @@
 ---
 name: tutor-outline
 description: >
-  Help users learn any concept or knowledge by creating a personalized teaching outline,
-  and revise that outline based on user feedback.
-  Use this skill whenever a user wants to learn something, study a topic, understand a concept,
-  asks for a learning plan or curriculum, says "teach me X" or "I want to learn X",
-  or needs help structuring their learning path — even if they don't explicitly say "outline" or "curriculum".
-  ALSO use this skill when a user wants to revise, adjust, or give feedback on an existing outline —
-  whether the outline was created with this skill or not. Triggers include phrases like
-  "this chapter is too hard", "I don't understand Chapter 3", "can you simplify this?",
-  "the order doesn't feel right", "修改大纲", "调整路线", "这一章太难了", or any
-  feedback on an outline's structure, difficulty, or ordering.
-  This skill focuses on diagnosing knowledge gaps and building a structured, prerequisite-ordered
-  teaching plan tailored to the user's current level.
+  Internal sub-skill of the tutor pipeline. Diagnoses knowledge gaps and builds
+  a structured, prerequisite-ordered teaching outline tailored to the learner's
+  current level. Also handles outline revision based on user feedback.
+  This skill is normally loaded by the tutor skill via the skill tool and should
+  not be triggered by general user conversation — user-facing learning requests are
+  handled by the tutor skill. Only invoke directly if the user explicitly asks for
+  this skill by name (e.g., "使用 tutor-outline").
 ---
 
 # Tutor Outline Skill
