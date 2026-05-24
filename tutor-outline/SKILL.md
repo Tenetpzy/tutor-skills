@@ -97,13 +97,14 @@ Divide the outline into chapters. Within each chapter, difficulty must increase 
 
 ### 4. Concrete Before Abstract
 
-The ordering for teaching any new concept MUST be:
+When the learner encounters a concept for the first time, prioritize making it graspable over presenting it formally. The core principle is: **use what the learner already knows to illuminate what they don't**. This can take many forms:
 
-1. **Concrete example** — from a domain the user is familiar with (NOT the classic textbook example from the target domain itself). If the user is a chef learning about chemical equilibrium, use kitchen analogies, not chemistry lab ones.
-2. **Pattern recognition** — help the user see the recurring pattern across 2-3 examples.
-3. **Abstract formulation** — now introduce the general definition, formula, or architecture.
+- A concrete example from a familiar domain (if the user is a chef learning about chemical equilibrium, use kitchen analogies, not chemistry lab ones).
+- An analogy or metaphor that maps the new concept onto something the learner already understands.
+- A worked walkthrough that grounds the abstract idea in tangible experience.
+- Building from a simpler, already-understood concept toward the new one.
 
-It is forbidden to present a definition, theorem, or formula first and then say "for example...". The example must come first.
+What matters is that the learner never faces a bare definition with no anchoring — always provide a way in before presenting the formal statement.
 
 ### 5. Layered Peeling
 
@@ -145,7 +146,7 @@ Use this template:
 
 ## Chapter 1: [Title]
 - **Prerequisites**: [what the user must already know; "none" for the first chapter]
-- **Teaching approach**: [concrete example → pattern → abstraction, described narratively]
+- **Teaching approach**: [how to make the concept graspable — e.g., concrete example, analogy, building on known concepts; described narratively]
 - **Core takeaway**: [the ONE thing the user should retain from this chapter]
 - **Omitted for now**: [what is intentionally left out and will be covered later]
 - **Transition to next**: [how this connects to the next chapter]

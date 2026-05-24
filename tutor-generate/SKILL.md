@@ -111,8 +111,8 @@ Launch a dedicated review subagent that:
      the same concept redundantly.
    - **Factual errors** — verify key technical claims, using web search if necessary. Flag anything
      incorrect, misleading, or outdated.
-   - **Missing elements** — does each chapter include concrete examples, pattern
-     recognition, abstract formulation, core takeaway, and a transition bridge?
+   - **Missing elements** — does each chapter include a concrete entry point for new
+      concepts, a core takeaway, and a transition bridge?
 
 3. **Produces a structured report** with:
    - Per-chapter assessment (PASS / NEEDS FIX)
@@ -162,8 +162,8 @@ topics that the outline deliberately defers.
 
 The outline describes HOW to teach. You generate WHAT to teach using exactly that
 method. The prescribed teaching approach for a chapter is law:
-- If the outline says "Concrete example → Pattern → Abstraction", you must structure
-  the chapter that way.
+- If the outline specifies a particular teaching sequence (e.g., "start with a kitchen
+  analogy, then generalize"), structure the chapter that way.
 - If the outline provides a specific concrete example, use it as your starting point —
   enhance it, but don't replace it with a different one unless the original is genuinely
   unsuitable.
@@ -173,16 +173,20 @@ method. The prescribed teaching approach for a chapter is law:
 
 ### 2. Concrete-First Teaching
 
-For EVERY new concept:
-1. **Concrete example** — from a domain the learner is familiar with (read the
-   Learner Profile to pick the right domain). If the user is a chef, use kitchen
-   analogies. If the user is a developer, use code examples. This must come FIRST.
-2. **Pattern recognition** — show 2-3 more examples of the same pattern in different
-   contexts. The learner should start thinking "oh, I see the common thread".
-3. **Abstract formulation** — now, and ONLY now, present the definition, formula, or
-   general principle. The learner has concrete anchors to attach it to.
+When the learner encounters a concept for the first time, always provide an entry point
+before the formal statement. The core principle: **use what the learner already knows
+to illuminate what they don't**. Depending on the concept and the outline's teaching
+approach, this can take many forms:
 
-It is forbidden to present a definition first and then say "for example...".
+- A concrete example from a familiar domain (if the learner is a chef, use kitchen
+  analogies for chemistry; if a developer, use code examples).
+- An analogy or metaphor that maps the new concept onto something the learner already
+  understands.
+- A worked walkthrough that grounds the abstract idea in tangible experience.
+- Building from a simpler, already-understood concept toward the new one.
+
+What matters is that the learner never faces a bare definition
+with no anchoring — always provide a way in first.
 
 ### 3. Respect the Learner's Level
 
@@ -272,16 +276,17 @@ Each `index.md` must follow this structure:
 ## What You Already Know
 [Brief recap of prior chapters' key takeaways this chapter builds on]
 
-## [Concrete Example Section — use an engaging, descriptive title]
-[A relatable, domain-appropriate example. Walk through it thoroughly.
-This is the learner's first contact with the new concept — make it stick.]
+## [Entry Point Section — use an engaging, descriptive title]
+[An accessible way into the new concept — a concrete example, analogy, or familiar-domain
+walkthrough. This is the learner's first contact with the new concept — make it stick.
+Adapt the form to what works best for this concept. Some concepts suit a three-stage
+"example → pattern → generalization" arc; others are better served by a single vivid
+analogy or a building-on-what-you-know explanation.]
 
-## Seeing the Pattern
-[2-3 more examples in different contexts. Highlight what they share.]
-
-## The General Idea
-[Abstract formulation — definition, formula, architecture. The learner now
-has concrete anchors, so the abstraction will feel earned, not imposed.]
+## [Core Explanation Section — adapt structure to the concept]
+[The detailed explanation — use whatever structure the outline's teaching approach
+prescribes. This is where the formal definition, formula, or architecture lives,
+anchored by the entry point above so it feels earned, not imposed.]
 
 ## Core Takeaway
 > [The ONE thing to remember — prominently displayed as a blockquote]
@@ -317,7 +322,7 @@ practice problems.]
 - The learner's level: [key points from Learner Profile]
 - Prerequisites by this point: [list of chapters 1 through N-1 and their core takeaways]
 - Topics you MUST NOT cover: [the "Omitted for now" list for THIS chapter]
-- Your chapter's teaching approach: [the 3-step approach from the outline]
+- Your chapter's teaching approach: [the approach from the outline]
 ```
 
 ## Important Reminders
