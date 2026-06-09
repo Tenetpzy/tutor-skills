@@ -240,7 +240,7 @@ Use this template:
 - **Prerequisites**: [what the user must already know; "none" for the first chapter]
 - **Teaching approach**: [concise planning directive — e.g., "Analogy: kitchen → equilibrium", "Build on Ch2 vector intuition, extend to matrices"]
 - **Core takeaway**: [the ONE thing the user should retain from this chapter]
-- **Omitted for now**: [what is intentionally left out and will be covered later]
+- **Omitted for now** (optional): [what is intentionally left out and will be covered later; only include this field when there are deferred topics]
 - **Transition to next**: [how this connects to the next chapter]
 
 ## Chapter 2: ...

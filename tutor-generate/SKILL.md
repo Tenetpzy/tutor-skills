@@ -65,7 +65,7 @@ following:
    - The full prerequisite chain (what the user knows by the time they reach this chapter)
    - What each prior chapter teaches (so it can reference prior concepts correctly)
    - What the next chapter needs (so it can end with an appropriate bridge)
-   - The "Omitted for now" lists (topics it MUST NOT cover)
+   - The "Omitted for now" lists, if any (topics it MUST NOT cover)
 
 2. **Their specific assignment** — which chapter(s) to write, with the exact outline
    text for those chapters.
@@ -93,13 +93,13 @@ Launch a dedicated review subagent that:
    - **Prerequisite satisfaction** — no chapter assumes knowledge from a chapter that
      hasn't been taught yet
    - **Omitted-items compliance** — no chapter covers topics from its "Omitted for now"
-     list
+     list (if the outline specifies one)
    - **Cross-chapter duplication** — no two chapters spend significant time explaining
      the same concept redundantly
    - **Factual errors** — verify key technical claims using web search if necessary. Flag
      anything incorrect, misleading, or outdated.
-   - **Missing elements** — does each chapter include a concrete entry point for new
-     concepts, a core takeaway, and a transition bridge?
+   - **Missing elements** — does each chapter follow the outline's prescribed teaching
+     approach, include a core takeaway, and a transition bridge?
 
 3. **Produces a structured report** with:
    - Per-chapter assessment (PASS / NEEDS FIX)
@@ -144,8 +144,8 @@ rounds, report remaining issues to the user.
 
 These rules define how to generate content from an outline chapter. They MUST be included
 in every subagent prompt. Each rule exists because the common failure mode is content
-that rushes to abstraction, ignores the learner's level, or leaks topics that the
-outline deliberately defers.
+that ignores the learner's level, deviates from the outline's teaching strategy, or leaks
+topics that the outline deliberately defers.
 
 ### 1. Follow the Outline Faithfully
 
@@ -158,55 +158,45 @@ The outline describes HOW to teach. Generate content using exactly that method:
 - Do not cover topics from the "Omitted for now" / "暂不涉及" list.
 - Do not teach above or below the Learner Profile's stated level.
 
-### 2. Concrete-First Teaching
-
-When the learner encounters a concept for the first time, always provide an entry point
-before the formal statement. Use what the learner already knows to illuminate what they
-don't. This can take many forms:
-- A concrete example from a familiar domain
-- An analogy mapping the new concept onto something the learner already understands
-- A worked walkthrough grounding the abstract idea in tangible experience
-- Building from a simpler, already-understood concept toward the new one
-
-What matters is that the learner never faces a bare definition with no anchoring.
-
-### 3. Respect the Learner's Level
+### 2. Respect the Learner's Level
 
 Use vocabulary, analogies, and pacing suited to the Learner Profile. If the profile
 says "knows Python basics but no linear algebra", do NOT assume matrix notation. If it
 says "strong math, weak physics", use equations freely but explain physical intuition
 carefully.
 
-When unsure if a concept needs explanation, err on the side of explaining it. The
-"Omitted for now" list is the ONLY authorized list of things to skip.
+When unsure if a concept needs explanation, err on the side of explaining it. If the
+outline provides an "Omitted for now" list, that is the ONLY authorized list of things
+to skip.
 
-### 4. Never Cross the "Omitted" Boundary
+### 3. Respect the "Omitted" Boundary
 
-Every chapter has an "Omitted for now" list. These topics MUST NOT appear in your
-content — not even in passing. If a natural teaching path leads near an omitted topic,
-acknowledge it briefly: "There's more depth here — we'll explore this in a later
-chapter." Do NOT explain the omitted topic itself.
+If the outline specifies an "Omitted for now" / "暂不涉及" list for a chapter, those
+topics MUST NOT appear in your content — not even in passing. If a natural teaching path
+leads near an omitted topic, acknowledge it briefly: "There's more depth here — we'll
+explore this in a later chapter." Do NOT explain the omitted topic itself. If the outline
+has no such list for a chapter, this rule does not apply.
 
-### 5. Chain to Prerequisites
+### 4. Chain to Prerequisites
 
 For every chapter after the first, open with a brief "What You Already Know" section
 that references key takeaways from prior chapters — specifically those this chapter
 builds on. This reinforces the learning journey and gives the learner confidence that
 they're ready.
 
-### 6. End with a Bridge
+### 5. End with a Bridge
 
 Close each chapter with a "What's Next" section explaining WHY the next chapter's
 topic matters and HOW it connects to what the learner just mastered. This creates
 momentum and a sense of progression.
 
-### 7. Highlight the Core Takeaway
+### 6. Highlight the Core Takeaway
 
 The outline's "Core takeaway" is the ONE thing the learner must retain. Make it
 visually prominent — use a blockquote or callout. It should be the first thing the
 learner sees when skimming back.
 
-### 8. Research When Needed
+### 7. Research When Needed
 
 Use web search when:
 - The topic involves time-sensitive information or recent developments
@@ -218,13 +208,13 @@ For stable, well-established concepts you are confident about, use your internal
 knowledge directly. Don't search for the sake of searching — but don't guess when
 you're uncertain either.
 
-### 9. Use the Learner's Language
+### 8. Use the Learner's Language
 
 Write in the same language as the outline. If the outline is in Chinese, generate
 Chinese content. If English, English. Match the outline's tone — conversational,
 warm, and accessible.
 
-### 10. Self-Contained Chapters
+### 9. Self-Contained Chapters
 
 Each chapter should be readable independently — the learner may want to review a
 specific topic later without re-reading all prior chapters. Include enough context
@@ -252,35 +242,17 @@ For each chapter, create a directory under the outline directory:
 └── README.md                       (table of contents, generated in Phase 5)
 ```
 
-Each `index.md` must follow this structure:
+Each `index.md` should follow the structure prescribed by the outline's teaching approach.
+The outline defines how to teach each chapter — your content structure should reflect
+that. Beyond the outline's directives, these elements are always required:
 
-```markdown
-# Chapter N: [Title from outline]
+- **Opening**: A "What You Already Know" section linking to prior chapters (Rule 4)
+- **Core Takeaway**: Visually prominent, e.g. blockquote (Rule 6)
+- **Closing**: A "What's Next" bridge to the next chapter (Rule 5)
 
-## What You Already Know
-[Brief recap of prior chapters' key takeaways this chapter builds on]
-
-## [Entry Point Section — use an engaging, descriptive title]
-[An accessible way into the new concept — a concrete example, analogy, or familiar-domain
-walkthrough. This is the learner's first contact with the new concept — make it stick.
-Adapt the form to what works best for this concept. Some concepts suit a three-stage
-"example → pattern → generalization" arc; others are better served by a single vivid
-analogy or a building-on-what-you-know explanation.]
-
-## [Core Explanation Section — adapt structure to the concept]
-[The detailed explanation — use whatever structure the outline's teaching approach
-prescribes. This is where the formal definition, formula, or architecture lives,
-anchored by the entry point above so it feels earned, not imposed.]
-
-## Core Takeaway
-> [The ONE thing to remember — prominently displayed as a blockquote]
-
-## Practice
-[Optional: self-check questions, mini-exercises, or thought experiments]
-
-## What's Next
-[Bridge to the next chapter — why it matters and how it connects]
-```
+Other sections, their titles, ordering, and structure should come from the outline's
+teaching approach — do not impose a uniform template across chapters when the outline
+prescribes different strategies.
 
 ---
 
@@ -307,7 +279,7 @@ practice problems.]
 ## CRITICAL CONSTRAINTS
 - The learner's level: [key points from Learner Profile]
 - Prerequisites by this point: [list of chapters 1 through N-1 and their core takeaways]
-- Topics you MUST NOT cover: [the "Omitted for now" list for THIS chapter]
+- Topics you MUST NOT cover: [the "Omitted for now" list for THIS chapter, if any]
 - Your chapter's teaching approach: [the approach from the outline]
 ```
 
