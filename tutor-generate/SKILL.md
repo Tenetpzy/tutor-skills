@@ -2,21 +2,19 @@
 name: tutor-generate
 description: >
   Internal sub-skill of the tutor pipeline. Generates detailed, ready-to-study
-  learning content from a teaching outline created by tutor-outline. Decomposes
-  outline chapters into parallel subagent tasks for content generation, followed
-  by consistency review and assembly.
-  This skill is normally loaded by the tutor skill via the skill tool and should
-  not be triggered by general user conversation — user-facing learning requests are
-  handled by the tutor skill. Only invoke directly if the user explicitly asks for
-  this skill by name (e.g., "使用 tutor-generate").
+  learning content from a teaching outline — decomposing chapters into parallel
+  tasks with consistency review and final assembly.
+  Activated automatically by the tutor skill. Only invoke directly when the user
+  explicitly asks for this skill by name (e.g., "使用 tutor-generate"). Do not
+  trigger on general learning queries.
 ---
 
 # Tutor Generate Skill
 
 You are a content generation orchestrator. The outline already defines what to teach,
 how to teach it, and in what order. Your job is to faithfully expand each chapter into
-complete, engaging content — and to orchestrate parallel subagents so that each
-chapter's deep research doesn't exhaust a single context window.
+complete, engaging content — orchestrating parallel subagents so that each chapter's
+research doesn't exhaust a single context window.
 
 Do NOT question or modify the outline. Do NOT add your own chapters. Generate content
 following the outline's prescribed teaching approach exactly.
@@ -26,29 +24,25 @@ following the outline's prescribed teaching approach exactly.
 ### Phase 0 — Load and Validate the Outline
 
 1. Ask the user for the outline file path. If a task instruction already specifies it,
-   use it directly without asking.
+   use it directly.
 2. Read the file. Verify it has the expected structure: a `# Learning Outline` (or
    `# 学习大纲`) title, a Learner Profile section, and multiple chapters each with at
    least Prerequisites, Teaching approach, and Core takeaway fields.
 3. If the file is missing or invalid, tell the user and stop.
-4. Confirm: all generated content will be saved under the SAME directory as the outline
-   file. Brief confirmation to the user, then proceed.
+4. Confirm that all generated content will be saved under the same directory as the
+   outline file, then proceed.
 
 ### Phase 1 — Task Decomposition
 
 Analyze the outline and produce a task plan. The goal is to maximize parallelism:
-each chapter needs independent research into its topic, and sequential generation
-would accumulate too much context.
+each chapter needs independent research, and sequential generation would exhaust context.
 
 **Default rule: one chapter = one subagent.**
 
 Exceptions where grouping is acceptable:
-- A chapter is trivially short (< 3 sentences of outline guidance) and its content
-  naturally extends the previous chapter's material — in this case it can be grouped
-  with its predecessor into a single subagent task.
-- More than ~12 chapters — group adjacent pairs to keep the total subagent count
-  manageable (the system can spawn them all in parallel, but the main agent must
-  also process all results).
+- A chapter is trivially short (< 3 sentences of outline guidance) and naturally extends
+  the previous chapter's material — group it with its predecessor.
+- More than ~12 chapters — group adjacent pairs to keep the subagent count manageable.
 
 For each task, determine:
 - Which chapter(s) it covers
@@ -59,12 +53,12 @@ For each task, determine:
 - Optional additional files if content is naturally complex (see Output Structure)
 
 **Display the complete task plan to the user before launching.** Let them approve or
-adjust the grouping. Do NOT proceed to Phase 2 without confirmation.
+adjust. Do NOT proceed to Phase 2 without confirmation.
 
 ### Phase 2 — Parallel Content Generation
 
-For EACH task defined in Phase 1, spawn a subagent in parallel. Every subagent MUST
-receive ALL of the following:
+For each task, spawn a subagent in parallel. Every subagent MUST receive ALL of the
+following:
 
 1. **The complete outline text** — so the subagent understands:
    - The Learner Profile (user's level, background, depth-breadth strategy)
@@ -78,14 +72,8 @@ receive ALL of the following:
 
 3. **The output directory path** — where to save the generated files.
 
-4. **The content generation rules** — copy the entire "Content Generation Rules"
-   section below into each subagent's prompt.
-
-5. **Research directives** — use web search when needed: if the topic involves
-   time-sensitive information, inherently requires research (e.g., recent developments,
-   current APIs, latest benchmarks), or your internal knowledge is insufficient to
-   meet the outline's requirements faithfully. Do not search for basic, stable
-   concepts you already know well — use your best judgment.
+4. **The content generation rules** — include the full Content Generation Rules section
+   in each subagent's prompt (see the Subagent Prompt Template for placement).
 
 Spawn ALL subagents in one batch. Wait for ALL to complete before proceeding to Phase 3.
 
@@ -97,22 +85,21 @@ Launch a dedicated review subagent that:
 
 2. **Checks for these issues:**
    - **Terminology consistency** — the same concept uses the same name/notation across
-     chapters (e.g., not "权重矩阵" in one chapter and "参数矩阵" in another).
-   - **Style/tone consistency** — same reading level, same language, same warmth level
-     throughout.
+     chapters
+   - **Style/tone consistency** — same reading level, language, and warmth throughout
    - **Transition consistency** — Chapter N's opening "What You Already Know" section
      accurately reflects what Chapter N-1 actually taught (not just what the outline
-     said it would teach).
+     said it would teach)
    - **Prerequisite satisfaction** — no chapter assumes knowledge from a chapter that
-     hasn't been taught yet.
+     hasn't been taught yet
    - **Omitted-items compliance** — no chapter covers topics from its "Omitted for now"
-     list.
+     list
    - **Cross-chapter duplication** — no two chapters spend significant time explaining
-     the same concept redundantly.
-   - **Factual errors** — verify key technical claims, using web search if necessary. Flag anything
-     incorrect, misleading, or outdated.
+     the same concept redundantly
+   - **Factual errors** — verify key technical claims using web search if necessary. Flag
+     anything incorrect, misleading, or outdated.
    - **Missing elements** — does each chapter include a concrete entry point for new
-      concepts, a core takeaway, and a transition bridge?
+     concepts, a core takeaway, and a transition bridge?
 
 3. **Produces a structured report** with:
    - Per-chapter assessment (PASS / NEEDS FIX)
@@ -125,48 +112,48 @@ If the review found issues:
 
 1. For each flagged chapter, read the review subagent's specific feedback.
 
-2. Adjust the subagent prompt used in Phase 2 by:
-   - Adding the specific issues that need fixing
-   - Adding any cross-chapter context the subagent was missing (e.g., "Chapter 2
-     used X as its main example, make sure your opening references X, not Y")
-   - Emphasizing the violated rule (e.g., "DO NOT cover eigenvalues — this is on
-     the Omitted for now list")
+2. Adjust the subagent prompt by adding:
+   - The specific issues that need fixing
+   - Any cross-chapter context the subagent was missing (e.g., "Chapter 2 used X as
+     its main example, make sure your opening references X, not Y")
+   - Emphasis on the violated rule (e.g., "DO NOT cover eigenvalues — this is on the
+     Omitted for now list")
 
-3. Re-launch the subagent for that chapter with the adjusted prompt. The new
-   content OVERWRITES the previous files in the chapter's directory.
+3. Re-launch the subagent for that chapter with the adjusted prompt. New content
+   OVERWRITES previous files.
 
-4. After all flagged chapters are regenerated, optionally re-run Phase 3 (a
-   lighter, targeted review of only the changed chapters plus their neighbors).
+4. After all flagged chapters are regenerated, optionally re-run Phase 3 (a targeted
+   review of only the changed chapters and their neighbors).
 
 **Guardrail:** Do not loop more than twice. If issues persist after two regeneration
-rounds, report the remaining issues to the user and let them decide.
+rounds, report remaining issues to the user.
 
 ### Phase 5 — Final Assembly
 
-1. Create `<outline-dir>/README.md` — a table of contents that links to each chapter
+1. Create `<outline-dir>/README.md` — a table of contents linking to each chapter
    directory, with one-line descriptions from the outline's Core takeaway field.
 
 2. Report completion to the user:
    - List of generated chapters with their file counts
-   - Summary of any unresolved issues (if any)
-   - The full path to the outline directory so the user knows where everything is
+   - Summary of any unresolved issues
+   - The full path to the outline directory
+
+---
 
 ## Content Generation Rules
 
-These rules MUST be included verbatim in every subagent prompt. They define how to
-generate content from an outline chapter. Each rule exists because the common failure
-mode is content that rushes to abstraction, ignores the learner's level, or leaks
-topics that the outline deliberately defers.
+These rules define how to generate content from an outline chapter. They MUST be included
+in every subagent prompt. Each rule exists because the common failure mode is content
+that rushes to abstraction, ignores the learner's level, or leaks topics that the
+outline deliberately defers.
 
 ### 1. Follow the Outline Faithfully
 
-The outline describes HOW to teach. You generate WHAT to teach using exactly that
-method. The prescribed teaching approach for a chapter is law:
-- If the outline specifies a particular teaching sequence (e.g., "start with a kitchen
-  analogy, then generalize"), structure the chapter that way.
+The outline describes HOW to teach. Generate content using exactly that method:
+- If the outline specifies a teaching sequence (e.g., "start with a kitchen analogy,
+  then generalize"), structure the chapter that way.
 - If the outline provides a specific concrete example, use it as your starting point —
-  enhance it, but don't replace it with a different one unless the original is genuinely
-  unsuitable.
+  enhance it, don't replace it unless it's genuinely unsuitable.
 - Do not reorder, skip, or add teaching steps.
 - Do not cover topics from the "Omitted for now" / "暂不涉及" list.
 - Do not teach above or below the Learner Profile's stated level.
@@ -174,47 +161,42 @@ method. The prescribed teaching approach for a chapter is law:
 ### 2. Concrete-First Teaching
 
 When the learner encounters a concept for the first time, always provide an entry point
-before the formal statement. The core principle: **use what the learner already knows
-to illuminate what they don't**. Depending on the concept and the outline's teaching
-approach, this can take many forms:
+before the formal statement. Use what the learner already knows to illuminate what they
+don't. This can take many forms:
+- A concrete example from a familiar domain
+- An analogy mapping the new concept onto something the learner already understands
+- A worked walkthrough grounding the abstract idea in tangible experience
+- Building from a simpler, already-understood concept toward the new one
 
-- A concrete example from a familiar domain (if the learner is a chef, use kitchen
-  analogies for chemistry; if a developer, use code examples).
-- An analogy or metaphor that maps the new concept onto something the learner already
-  understands.
-- A worked walkthrough that grounds the abstract idea in tangible experience.
-- Building from a simpler, already-understood concept toward the new one.
-
-What matters is that the learner never faces a bare definition
-with no anchoring — always provide a way in first.
+What matters is that the learner never faces a bare definition with no anchoring.
 
 ### 3. Respect the Learner's Level
 
 Use vocabulary, analogies, and pacing suited to the Learner Profile. If the profile
-says "knows Python basics but no linear algebra", do NOT assume matrix notation.
-If the profile says "strong math, weak physics", use equations freely but explain
-physical intuition carefully.
+says "knows Python basics but no linear algebra", do NOT assume matrix notation. If it
+says "strong math, weak physics", use equations freely but explain physical intuition
+carefully.
 
-When unsure if a concept needs explanation, err on the side of explaining it.
-The "Omitted for now" list is the ONLY authorized list of things to skip.
+When unsure if a concept needs explanation, err on the side of explaining it. The
+"Omitted for now" list is the ONLY authorized list of things to skip.
 
 ### 4. Never Cross the "Omitted" Boundary
 
 Every chapter has an "Omitted for now" list. These topics MUST NOT appear in your
-content — not even in passing. If a natural teaching path leads near an omitted
-topic, acknowledge it briefly: "There's more depth here — we'll explore this in a
-later chapter." Do NOT explain the omitted topic itself.
+content — not even in passing. If a natural teaching path leads near an omitted topic,
+acknowledge it briefly: "There's more depth here — we'll explore this in a later
+chapter." Do NOT explain the omitted topic itself.
 
 ### 5. Chain to Prerequisites
 
 For every chapter after the first, open with a brief "What You Already Know" section
-that references the key takeaways from prior chapters — specifically those that this
-chapter builds on. This reinforces the learning journey and gives the learner
-confidence that they're ready.
+that references key takeaways from prior chapters — specifically those this chapter
+builds on. This reinforces the learning journey and gives the learner confidence that
+they're ready.
 
 ### 6. End with a Bridge
 
-Close each chapter with a "What's Next" section that explains WHY the next chapter's
+Close each chapter with a "What's Next" section explaining WHY the next chapter's
 topic matters and HOW it connects to what the learner just mastered. This creates
 momentum and a sense of progression.
 
@@ -240,7 +222,7 @@ you're uncertain either.
 
 Write in the same language as the outline. If the outline is in Chinese, generate
 Chinese content. If English, English. Match the outline's tone — conversational,
-warm, and accessible. This is teaching, not a technical paper.
+warm, and accessible.
 
 ### 10. Self-Contained Chapters
 
@@ -248,6 +230,8 @@ Each chapter should be readable independently — the learner may want to review
 specific topic later without re-reading all prior chapters. Include enough context
 in the opening "What You Already Know" section for stand-alone readability, without
 re-teaching prior chapters.
+
+---
 
 ## Output Structure
 
@@ -298,6 +282,8 @@ anchored by the entry point above so it feels earned, not imposed.]
 [Bridge to the next chapter — why it matters and how it connects]
 ```
 
+---
+
 ## Subagent Prompt Template
 
 When spawning a content generation subagent, use this structure:
@@ -316,7 +302,7 @@ Save the main content as index.md. [Optional: also create exercises.md with
 practice problems.]
 
 ## GENERATION RULES
-[Paste the entire "Content Generation Rules" section from Phase 2]
+[Paste the Content Generation Rules section]
 
 ## CRITICAL CONSTRAINTS
 - The learner's level: [key points from Learner Profile]
@@ -327,19 +313,13 @@ practice problems.]
 
 ## Important Reminders
 
-- The outline is authoritative. Never second-guess the teaching approach or add/remove
-  chapters. If something seems wrong about the outline, flag it to the user rather than
-  silently overriding it.
-- Use web search when the topic requires it — for time-sensitive content, unfamiliar
-  domains, or when your internal knowledge is insufficient. For well-established
-  concepts, rely on your existing knowledge.
-- The Learner Profile is a hard constraint on content difficulty. Every paragraph should
-  pass the test: "Would the learner, as described, understand this?"
 - Subagents do NOT see each other's output during Phase 2 — they only share the outline.
   Cross-chapter alignment is the consistency reviewer's job (Phase 3).
-- Task decomposition is the key value of this skill. A 12-chapter outline done
-  sequentially would exhaust context. Done in parallel, it's tractable.
 - When a regeneration round is needed, adjust the subagent prompt with SPECIFIC
   feedback — generic "do better" instructions won't help.
+- The outline is authoritative. If something seems wrong, flag it to the user rather
+  than silently overriding it.
+- The Learner Profile is a hard constraint on content difficulty. Every paragraph
+  should pass the test: "Would the learner, as described, understand this?"
 - Save ALL generated content under the outline's directory. Never scatter files across
   unrelated locations.
